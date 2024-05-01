@@ -218,6 +218,22 @@ func structToEntries(v reflect.Value, opt *marshalState) (entries []Entry, label
 				entries = append(entries, block)
 			}
 
+		case tag.object:
+			attr := &Attribute{
+				Key:      tag.name,
+				Comments: tag.comments(opt),
+			}
+
+			jsonBytes, err := json.Marshal(field.v.Interface())
+			if err != nil {
+				return nil, nil, err
+			}
+
+			attr.Value = &Object{Json: string(jsonBytes)}
+
+			attr.Optional = (tag.optional || attr.Default != nil) && opt.schema
+			entries = append(entries, attr)
+
 		default:
 			attr, err := fieldToAttr(field, tag, opt)
 			if err != nil {

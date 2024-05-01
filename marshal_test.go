@@ -76,6 +76,33 @@ func (j *jsonMarshalValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]string{"hello": j.text})
 }
 
+type ObjectMarshalValue struct {
+	Objects []ObjectTest `hcl:"objects,object"`
+}
+
+type ObjectTest struct {
+	NestedObject NestedObject
+}
+
+type NestedObject struct {
+	Text string
+}
+
+func TestMarshalObject(t *testing.T) {
+	test := &ObjectMarshalValue{
+		Objects: []ObjectTest{
+			{
+				NestedObject: NestedObject{
+					Text: "hello",
+				},
+			},
+		},
+	}
+	marshalled, err := Marshal(test)
+	require.NoError(t, err)
+	require.Equal(t, "objects = [{\"NestedObject\":{\"Text\":\"hello\"}}]\n", string(marshalled))
+}
+
 func TestMarshal(t *testing.T) {
 	timestamp, err := time.Parse(time.RFC3339, "2020-01-02T15:04:05Z")
 	require.NoError(t, err)

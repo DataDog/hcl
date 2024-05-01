@@ -367,6 +367,24 @@ func (f *Call) children() (children []Node) {
 	return out
 }
 
+// object encoded as raw json
+// only supported on the marshal path
+type Object struct {
+	Pos    lexer.Position `parser:""`
+	Parent Node           `parser:""`
+
+	Json string `parser:"@(String | Ident)"`
+}
+
+var _ Value = &Object{}
+
+func (o *Object) Clone() Value                { clone := *o; return &clone }
+func (o *Object) String() string              { return o.Json }
+func (o *Object) Detach() bool                { return false }
+func (o *Object) Position() lexer.Position    { return o.Pos }
+func (o *Object) children() (children []Node) { return nil }
+func (o *Object) value()                      {}
+
 // String literal.
 type String struct {
 	Pos    lexer.Position `parser:""`

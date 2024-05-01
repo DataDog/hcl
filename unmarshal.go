@@ -503,6 +503,7 @@ type tag struct {
 	label        bool
 	block        bool
 	remain       bool
+	object       bool
 	help         string
 	defaultValue string
 	enum         string
@@ -563,6 +564,8 @@ func parseTag(parent reflect.Type, t reflect.StructField, opt *marshalState) tag
 		return tag{name: name, block: true, optional: true, help: help}
 	case "remain":
 		return tag{name: name, remain: true, help: help}
+	case "object":
+		return tag{name: name, object: true, help: help}
 	default:
 		panic("invalid HCL tag option " + option + " on " + id)
 	}
